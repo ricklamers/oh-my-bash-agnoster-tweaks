@@ -246,6 +246,13 @@ git_status_dirty() {
     [[ -n $dirty ]] && echo " ●"
 }
 
+shorten_string() {
+    max_len=20
+    if [ ${#1} -ge $max_len ]; then echo "${1:0:$(($max_len / 2))}..${1: -$(($max_len / 2))}" ;
+    else echo $1
+    fi
+}
+
 # Git: branch/detached head, dirty status
 prompt_git() {
     local ref dirty
@@ -258,7 +265,8 @@ prompt_git() {
         else
             prompt_segment green black
         fi
-        PR="$PR${ref/refs\/heads\// }$dirty"
+        BRANCH=$(shorten_string ${ref/refs\/heads\//})
+        PR="$PR$BRANCH $dirty"
     fi
 }
 
@@ -428,3 +436,7 @@ set_bash_prompt() {
 }
 
 PROMPT_COMMAND=set_bash_prompt
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+. $DIR/agnoster-tweaks.sh
